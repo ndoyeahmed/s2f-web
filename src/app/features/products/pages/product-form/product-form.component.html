@@ -1,0 +1,57 @@
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+  <!-- Nom du produit -->
+  <div class="form-group mb-3">
+    <label for="name">Nom du produit</label>
+    <input type="text" id="name" class="form-control" formControlName="name" placeholder="Nom du produit" />
+  </div>
+
+  <!-- Prix du produit -->
+  <div class="form-group mb-3">
+    <label for="price">Prix</label>
+    <input type="number" id="price" class="form-control" formControlName="price" placeholder="Prix" />
+  </div>
+
+  <!-- quantite stock initial du produit -->
+  <div class="form-group mb-3">
+    <label for="quantite">Quantité</label>
+    <input type="number" id="quantite" class="form-control" formControlName="quantite"
+      placeholder="Quantité stock initial" />
+  </div>
+
+  <!-- Catégorie du produit -->
+  <!-- <div class="form-group mb-3">
+    <label for="category">Catégorie</label>
+    <select id="category" class="form-select" formControlName="category">
+      <option value="" disabled>Choisissez une catégorie</option>
+      <option value="electronics">Costume traditionnelle</option>
+      <option value="fashion">Mode</option>
+    </select>
+  </div> -->
+
+  <label for="category">Catégorie</label>
+  <div class="input-group mb-3">
+
+    <select class="form-select" id="inputGroupSelect02" formControlName="category">
+      <option selected>Sélectionnez...</option>
+      @for (item of categories; track $index) {
+      <option [value]="item.id">{{item.libelle}}</option>
+      }
+    </select>
+    <app-categorie-form (afterSave)="onCategoriesChange($event)" />
+  </div>
+
+  <!-- Description du produit -->
+  <div class="form-group mb-3">
+    <label for="description">Description</label>
+    <textarea id="description" class="form-control" formControlName="description" rows="3"
+      placeholder="Description du produit"></textarea>
+  </div>
+
+  <!-- Boutons -->
+  <div class="d-flex justify-content-end align-items-center">
+    <button type="submit" class="btn btn-outline-primary mx-3" [disabled]="!productForm.valid">Enregistrer</button>
+    <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+  </div>
+
+</form>

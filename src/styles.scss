@@ -1,1 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+@import "bootstrap/scss/bootstrap";
+
+.btn-primary {
+  background-color: #1e3465 !important;
+  border-color: #1e3465 !important;
+}
+
+.btn-outline-primary {
+  border-color: #1e3465 !important;
+  color: #1e3465 !important;
+}
+
+.btn-outline-primary:hover {
+  border-color: #1e3465 !important;
+  background-color: #1e3465 !important;
+  color: #ffffff !important;
+}
+
+.nav-tabs .nav-link {
+  color: #1e3465 !important;
+}
+
+.nav-tabs .nav-link.active {
+  color: #6b6b6b !important;
+}
+
+.text-primary {
+  color: #1e3465 !important;
+}

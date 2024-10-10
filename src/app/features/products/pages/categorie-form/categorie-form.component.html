@@ -1,0 +1,25 @@
+<button [class]="formDialogOpenBtnCss" (click)="open(content)">
+  <em [class]="formDialogOpenBtnPrefixIcon"></em>
+  {{formDialogOpenBtnTitle}}
+  <em [class]="formDialogOpenBtnSuffixIcon"></em>
+</button>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{formDialogTitle}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="form-group mb-3">
+        <label for="libelle">Categorie</label>
+        <input type="text" id="libelle" class="form-control" placeholder="Nom de la catégorie" name="libelle"
+          [(ngModel)]="category.libelle" />
+      </div>
+    </div>
+    <div class="d-flex justify-content-end align-items-center">
+      <button type="submit" class="btn btn-outline-primary mx-3" (click)="save(modal)">Enregistrer</button>
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Annuler</button>
+    </div>
+  </div>
+</ng-template>

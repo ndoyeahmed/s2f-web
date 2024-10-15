@@ -13,27 +13,17 @@
   </div>
 
   <!-- quantite stock initial du produit -->
-  <div class="form-group mb-3">
+  <!-- <div class="form-group mb-3">
     <label for="quantite">Quantité</label>
     <input type="number" id="quantite" class="form-control" formControlName="quantite"
       placeholder="Quantité stock initial" />
-  </div>
-
-  <!-- Catégorie du produit -->
-  <!-- <div class="form-group mb-3">
-    <label for="category">Catégorie</label>
-    <select id="category" class="form-select" formControlName="category">
-      <option value="" disabled>Choisissez une catégorie</option>
-      <option value="electronics">Costume traditionnelle</option>
-      <option value="fashion">Mode</option>
-    </select>
   </div> -->
 
   <label for="category">Catégorie</label>
   <div class="input-group mb-3">
 
     <select class="form-select" id="inputGroupSelect02" formControlName="category">
-      <option selected>Sélectionnez...</option>
+      <option selected value="0">Sélectionnez...</option>
       @for (item of categories; track $index) {
       <option [value]="item.id">{{item.libelle}}</option>
       }
@@ -50,7 +40,13 @@
 
   <!-- Boutons -->
   <div class="d-flex justify-content-end align-items-center">
-    <button type="submit" class="btn btn-outline-primary mx-3" [disabled]="!productForm.valid">Enregistrer</button>
+    <button type="submit" class="btn btn-outline-primary mx-3" [disabled]="!productForm.valid">
+      @if(productService.loaderFormSignal()) {
+      <span class="spinner-border spinner-border-sm mr-3" role="status"></span> Envoie des données en cours...
+      } @else {
+      <span>Enregistrer</span>
+      }
+    </button>
     <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
   </div>
 

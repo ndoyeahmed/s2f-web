@@ -13,6 +13,7 @@ import {
   NgbModalOptions,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ProductsService } from '../../products.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-categorie-form',
@@ -24,6 +25,7 @@ import { ProductsService } from '../../products.service';
 export class CategorieFormComponent {
   private readonly modalService = inject(NgbModal);
   private readonly produitService = inject(ProductsService);
+  private readonly toastr = inject(ToastrService);
 
   @Output() afterSave = new EventEmitter();
 
@@ -68,18 +70,16 @@ export class CategorieFormComponent {
     if (this.category.libelle !== '') {
       this.produitService.addCategory(this.category).subscribe(
         (response) => {
-          console.log(response);
-          // TODO: notif done successfully
+          this.toastr.success('catégorie ajouté avec succès');
           this.afterSave.emit(true);
           modal.close();
         },
         (err) => {
-          console.log(err);
-          // TODO: notif error
+          this.toastr.error("Echec de l'opération");
         }
       );
     } else {
-      // TODO: notification erreur
+      this.toastr.error('Veuillez saisir le nom de la catégorie');
     }
   }
 }

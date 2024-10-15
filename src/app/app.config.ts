@@ -11,6 +11,8 @@ import {
 } from '@angular/common/http';
 import { AuthExpiredInterceptor } from './core/interceptors/auth-expired.interceptor';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,5 +30,11 @@ export const appConfig: ApplicationConfig = {
       useClass: AuthExpiredInterceptor,
       multi: true,
     },
+    provideAnimations(), // Requis pour les animations des toasts
+    provideToastr({
+      timeOut: 3000, // Configuration globale des toasts
+      positionClass: 'toast-top-right', // Position globale
+      preventDuplicates: true, // Empêcher les duplications
+    }),
   ],
 };

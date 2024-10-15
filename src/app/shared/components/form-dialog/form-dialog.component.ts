@@ -4,6 +4,8 @@ import {
   ModalDismissReasons,
   NgbModalOptions,
 } from '@ng-bootstrap/ng-bootstrap';
+import { FormDialogService } from '../../form-dialog.service';
+import { OPEN } from './form-action-const';
 
 @Component({
   selector: 'app-form-dialog',
@@ -14,13 +16,14 @@ import {
 })
 export class FormDialogComponent {
   private readonly modalService = inject(NgbModal);
+  private readonly formDialogService = inject(FormDialogService);
 
   @Input() formDialogOptions: NgbModalOptions = {
     size: 'lg',
     backdrop: 'static',
   };
   @Input() formDialogTitle = '';
-  @Input() formDialogOpenBtnTitle = 'Open';
+  @Input() formDialogOpenBtnTitle = '';
   @Input() formDialogOpenBtnCss = 'btn btn-primary';
   @Input() formDialogOpenBtnPrefixIcon = 'fa fa-plus';
   @Input() formDialogOpenBtnSuffixIcon = '';
@@ -28,6 +31,7 @@ export class FormDialogComponent {
   closeResult = '';
 
   open(content: TemplateRef<any>) {
+    this.formDialogService.formdialogSignal.set(OPEN);
     this.modalService.open(content, this.formDialogOptions).result.then(
       (result) => {
         this.closeResult = `Closed with: ${result}`;

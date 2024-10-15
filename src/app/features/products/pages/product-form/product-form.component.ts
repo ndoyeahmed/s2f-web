@@ -1,4 +1,4 @@
-import { Component, inject, TemplateRef } from '@angular/core';
+import { Component, effect, inject, Input, TemplateRef } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
@@ -13,6 +13,10 @@ import {
 import { CategorieFormComponent } from '../categorie-form/categorie-form.component';
 import { CategorieDTO } from '../../../../shared/models/categorie-dto.model';
 import { ProductsService } from '../../products.service';
+import { ProduitDTO } from '../../../../shared/models/produit-dto.model';
+import { ToastrService } from 'ngx-toastr';
+import { FormDialogService } from '../../../../shared/form-dialog.service';
+import { OPEN } from '../../../../shared/components/form-dialog/form-action-const';
 
 @Component({
   selector: 'app-product-form',
@@ -22,11 +26,16 @@ import { ProductsService } from '../../products.service';
   styleUrl: './product-form.component.scss',
 })
 export class ProductFormComponent {
-  private readonly modalService = inject(NgbModal);
-  private readonly productService = inject(ProductsService);
-  closeResult = '';
+  @Input() productEdit!: ProduitDTO;
 
-  productForm: FormGroup;
+  private readonly modalService = inject(NgbModal);
+  productService = inject(ProductsService);
+  private readonly toastr = inject(ToastrService);
+  private readonly formDialogService = inject(FormDialogService);
+  closeResult = '';
+  loader = false;
+
+  productForm!: FormGroup;
   formDialogOptions = {
     size: 'sm',
     backdrop: 'static',
@@ -35,28 +44,54 @@ export class ProductFormComponent {
   categories: CategorieDTO[] = [];
 
   constructor(private readonly fb: FormBuilder) {
+    effect(() => {
+      const status = this.formDialogService.formdialogSignal();
+      if (status === OPEN) {
+        if (this.productEdit?.id) {
+          this.initEditProductForm(this.productEdit);
+        } else {
+          this.initAddProductForm();
+        }
+      }
+    });
+  }
+
+  initAddProductForm() {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
-      category: ['', Validators.required],
-      quantite: [0, [Validators.min(0)]],
+      category: [0, Validators.required],
+      // quantite: [0, [Validators.min(0)]],
+    });
+  }
+
+  initEditProductForm(product: ProduitDTO) {
+    this.productForm = this.fb.group({
+      name: [product.libelle, Validators.required],
+      description: [product.description, Validators.required],
+      price: [product.prix, [Validators.required, Validators.min(0)]],
+      category: [Number(product.categorieDto.id), Validators.required],
+      // quantite: [0, [Validators.min(0)]],
     });
   }
 
   ngOnInit(): void {
     this.getAllCategories();
+    if (this.productEdit?.id) {
+      this.initEditProductForm(this.productEdit);
+    } else {
+      this.initAddProductForm();
+    }
   }
 
   getAllCategories() {
     this.productService.getAllCategories().subscribe(
       (data: CategorieDTO[]) => {
-        console.log(data);
         this.categories = data;
       },
       (err) => {
-        console.log(err);
-        // TODO: notif error loading categories
+        this.toastr.error('Erreur lors du chargement des catégories');
       }
     );
   }
@@ -97,17 +132,17 @@ export class ProductFormComponent {
 
   onSubmit() {
     if (this.productForm.valid) {
-      const formData = new FormData();
-      formData.append('name', this.productForm.get('name')?.value);
-      formData.append(
-        'description',
-        this.productForm.get('description')?.value
-      );
-      formData.append('price', this.productForm.get('price')?.value);
-      formData.append('category', this.productForm.get('category')?.value);
+      const product = {
+        id: this.productEdit?.id ? this.productEdit.id : null,
+        libelle: this.productForm.value.name,
+        prix: this.productForm.value.price,
+        description: this.productForm.value.description,
+        categorieDto: {
+          id: Number(this.productForm.value.category),
+        } as CategorieDTO,
+      } as ProduitDTO;
 
-      // Envoyer les données via un service (à implémenter)
-      console.log('Formulaire valide, produit soumis :', formData);
+      this.productService.addProductAndRefresh(product, this.productForm);
     }
   }
 }

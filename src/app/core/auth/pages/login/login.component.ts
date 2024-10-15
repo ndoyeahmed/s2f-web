@@ -37,37 +37,13 @@ export default class LoginComponent {
       const val = this.form.value;
       this.authService.login(val).subscribe(
         () => {
-          this.authService.connectedUser().subscribe(
-            (user) => {
-              console.log(user);
-              this.loader = false;
-              this.local.set('mdd_user', user);
-              this.dispatchByRole(user.role);
-            },
-            (err) => {
-              console.log(err);
-              this.loader = false;
-            }
-          );
+          this.loader = false;
         },
         (error) => {
+          this.loader = false;
           this.errorMessage = 'email ou mot de passe incorrect';
         }
       );
-    }
-  }
-
-  dispatchByRole(role: string) {
-    switch (role) {
-      case 'ADMIN':
-        this.router.navigate(['/products']);
-        break;
-      case 'REVENDEUR':
-        this.router.navigate(['/products']);
-        break;
-      default:
-        this.router.navigate(['/products']);
-        break;
     }
   }
 }

@@ -1,0 +1,57 @@
+<button [class]="formDialogOpenBtnCss" (click)="open(content)">
+  <em [class]="formDialogOpenBtnPrefixIcon"></em>
+  {{formDialogOpenBtnTitle}}
+  <em [class]="formDialogOpenBtnSuffixIcon"></em>
+</button>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{formDialogTitle}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body" style="max-height: 80vh; overflow: auto;">
+    <div class="row">
+      <div class="form-group mb-3">
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" class="form-control" placeholder="Saisir le nom du client" name="nom"
+          [(ngModel)]="client.nom" />
+      </div>
+      <div class="form-group mb-3">
+        <label for="prenom">Prénom</label>
+        <input type="text" id="prenom" class="form-control" placeholder="Saisir le prénom du client" name="prenom"
+          [(ngModel)]="client.prenom" />
+      </div>
+      <div class="form-group mb-3">
+        <label for="telephone">Téléphone</label>
+        <input type="text" id="telephone" class="form-control" placeholder="Saisir le numéro de téléphone du client" name="telephone"
+          [(ngModel)]="client.telephone" />
+      </div>
+    </div>
+    <button class="btn btn-outline-secondary" (click)="addNewMesure()">Ajouter une mesure</button>
+    <div class="row mt-3">
+      @for (item of mesures; track $index) {
+        <div class="col-lg-4 col-md-4 col-sm-12 my-2">
+          <div class="card shadow-sm p-2">
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-default" (click)="deleteMesure(item.id)"><em class="fa fa-trash"></em></button>
+            </div>
+            <div class="form-group mb-2">
+              <label [for]="item.id">Mesure</label>
+              <input type="text" [id]="item.id" class="form-control" placeholder="Saisir le nom de la mesure" [name]="item.id+''"
+                [(ngModel)]="item.libelle" />
+            </div>
+            <div class="form-group">
+              <label [for]="'val'+item.id">Valeur</label>
+              <input type="text" [id]="'val'+item.id" class="form-control" placeholder="Saisir la valeur" [name]="'val'+item.id"
+                [(ngModel)]="item.valeur" />
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    <div class="d-flex justify-content-end align-items-center">
+      <button type="submit" class="btn btn-outline-primary mx-3" (click)="save(modal)">Enregistrer</button>
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Annuler</button>
+    </div>
+  </div>
+</ng-template>

@@ -46,7 +46,10 @@ export default class ProductListComponent {
         page: currentPage - 1,
         size: 5,
       } as ProductFilterPayload;
-      this.productService.getAllProductsByFilters(productPayloadFilter);
+      this.productService.getAllProductsByFilters(
+        productPayloadFilter.page,
+        productPayloadFilter.size
+      );
     }
   }
 
@@ -59,7 +62,10 @@ export default class ProductListComponent {
         page: currentPage + 1,
         size: 5,
       } as ProductFilterPayload;
-      this.productService.getAllProductsByFilters(productPayloadFilter);
+      this.productService.getAllProductsByFilters(
+        productPayloadFilter.page,
+        productPayloadFilter.size
+      );
     }
   }
 
@@ -71,7 +77,10 @@ export default class ProductListComponent {
           page: 0,
           size: 5,
         } as ProductFilterPayload;
-        this.productService.getAllProductsByFilters(productPayloadFilter);
+        this.productService.getAllProductsByFilters(
+          productPayloadFilter.page,
+          productPayloadFilter.size
+        );
       },
       (error) => this.toastr.error("Echec de l'opération")
     );

@@ -71,7 +71,7 @@ export class ProductFormComponent {
       name: [product.libelle, Validators.required],
       description: [product.description, Validators.required],
       price: [product.prix, [Validators.required, Validators.min(0)]],
-      category: [Number(product.categorieDto.id), Validators.required],
+      category: [Number(product.categorie.id), Validators.required],
       // quantite: [0, [Validators.min(0)]],
     });
   }
@@ -137,7 +137,7 @@ export class ProductFormComponent {
         libelle: this.productForm.value.name,
         prix: this.productForm.value.price,
         description: this.productForm.value.description,
-        categorieDto: {
+        categorie: {
           id: Number(this.productForm.value.category),
         } as CategorieDTO,
       } as ProduitDTO;

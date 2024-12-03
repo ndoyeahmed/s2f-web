@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { CategorieDTO } from '../../shared/models/categorie-dto.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ProductFilterPayload } from '../../shared/models/product-filter-payload.model';
 import { ProduitDTO } from '../../shared/models/produit-dto.model';
 import { ResponseDTOPaging } from '../../shared/models/response-dto-paging.model';
@@ -30,7 +30,10 @@ export class ProductsService {
   } as ProductFilterPayload;
 
   constructor(private readonly http: HttpClient) {
-    this.getAllProductsByFilters(this.productPayloadFilter);
+    this.getAllProductsByFilters(
+      this.productPayloadFilter.page,
+      this.productPayloadFilter.size
+    );
   }
 
   addCategory(category: CategorieDTO) {
@@ -61,7 +64,10 @@ export class ProductsService {
         this.loaderFormSignal.set(false);
         this.modalService.dismissAll();
         this.formDialogService.formdialogSignal.set(CLOSE);
-        this.getAllProductsByFilters(this.productPayloadFilter);
+        this.getAllProductsByFilters(
+          this.productPayloadFilter.page,
+          this.productPayloadFilter.size
+        );
       },
       error: (err) => {
         this.toastr.error("Echec de l'opération");
@@ -70,9 +76,12 @@ export class ProductsService {
     });
   }
 
-  getAllProductsByFilters(produitFilterPayloadr: ProductFilterPayload) {
+  getAllProductsByFilters(page = 0, size = 5) {
+    const options = {
+      params: new HttpParams().set('page', page).set('size', size),
+    };
     return this.http
-      .post<ResponseDTOPaging>(`/api/v1/products`, produitFilterPayloadr)
+      .get<ResponseDTOPaging>(`/api/v1/products/filter`, options)
       .subscribe({
         next: (response) => {
           this.productsSignal.set(response.result); // Mettre à jour les produits
@@ -86,5 +95,9 @@ export class ProductsService {
           this.toastr.error('Erreur lors du chargement des produits');
         },
       });
+  }
+
+  getAllProductsNotArchived() {
+    return this.http.get<ResponseDTOPaging>(`/api/v1/products/filter`);
   }
 }

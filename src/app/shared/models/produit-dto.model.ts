@@ -6,6 +6,6 @@ export interface ProduitDTO extends GlobalModel {
   libelle: string;
   description: string;
   prix: number;
-  categorieDto: CategorieDTO;
+  categorie: CategorieDTO;
   archive: boolean;
 }

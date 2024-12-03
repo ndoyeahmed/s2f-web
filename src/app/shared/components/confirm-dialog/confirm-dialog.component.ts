@@ -25,6 +25,8 @@ export class ConfirmDialogComponent {
     backdrop: 'static',
   };
 
+  modalReference: any;
+
   constructor() {
     effect(() => {
       const confirmState = this.confirmDialogService.confirmSignal();
@@ -35,16 +37,18 @@ export class ConfirmDialogComponent {
   }
 
   openModal() {
-    this.modalService.open(this.confirmDialog, this.formDialogOptions);
+    this.modalReference = this.modalService.open(this.confirmDialog, this.formDialogOptions);
   }
 
   confirm() {
     this.confirmDialogService.confirmSignal().yesFn();
-    this.modalService.dismissAll();
+    this.modalReference.close();
+    // this.modalService.dismissAll();
   }
 
   dismiss() {
     this.confirmDialogService.confirmSignal().noFn();
-    this.modalService.dismissAll();
+    this.modalReference.close();
+    // this.modalService.dismissAll();
   }
 }

@@ -20,6 +20,14 @@ export const routes: Routes = [
           ),
         canActivate: [AuthGuard],
       },
+      {
+        path: 'commandes',
+        loadComponent: () =>
+          import(
+            './features/commandes/pages/commandes/commandes.component'
+          ),
+        canActivate: [AuthGuard],
+      },
     ],
   },
   {

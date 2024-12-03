@@ -1,0 +1,106 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="row d-flex align-items-center">
+    <p>N° commande : <b>{{commandeNumber}}</b></p>
+    <div class="col-12">
+      <label for="client">Clients</label>
+      <div class="input-group mb-3">
+        <select class="form-select" id="client" formControlName="client" (change)="onSelectClient($event)">
+          <option [value]="0">Sélectionnez...</option>
+          @for (client of clients; track $index) {
+          <option [value]="client.id">{{client?.nom}} {{client?.prenom}}</option>
+          }
+        </select>
+        <!-- <button type="button" class="btn btn-default border">Nouveau</button> -->
+        <app-client-form (afterSave)="afterClientSaved($event)" />
+      </div>
+    </div>
+    <div class="col-6">
+      <label for="produits">Produits</label>
+      <div class="input-group mb-3">
+        <select class="form-select" id="produits"  (change)="onSelectProduct($event)" formControlName="product">
+          <option [value]="0">Sélectionnez...</option>
+          @for (item of products; track $index) {
+          <option [value]="item.id">{{item.libelle}}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group mb-3">
+        <label for="price">Prix de vente</label>
+        <input type="number" id="price" class="form-control" placeholder="Prix" formControlName="price"/>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group mb-3">
+        <label for="quantite">Quantité</label>
+        <input type="number" id="quantite" class="form-control" placeholder="Quantité" formControlName="quantite"/>
+      </div>
+    </div>
+    <div class="col-2">
+      <button type="button" class="btn btn-secondary btn-block mt-3" (click)="onAddProduct()" >Ajouter</button>
+    </div>
+    <div class="col-12 mb-3">
+      <h6 class="text-center mt-3">Liste des produits sélectionnés pour la commande</h6>
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered" id="dataTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Produit</th>
+              <th>Prix de vente</th>
+              <th>Quantité</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (!orderedProducts || orderedProducts.length <= 0) {
+              <tr>
+                <td colspan="6" class="text-center">Aucun produit sélectionné pour la commande.</td>
+              </tr>
+            }
+            @for (item of orderedProducts; track $index) {
+            <tr>
+              <td>{{$index+1}}</td>
+              <td>{{item?.produit?.libelle}}</td>
+              <td>{{item?.prixVente}}</td>
+              <td>{{item?.quantite}}</td>
+              <td>{{getTotalPrice(item?.prixVente, item?.quantite)}}</td>
+              <td>
+                <button type="button" class="btn btn-danger mx-2" (click)="onDeleteOrderedProduct(item?.produit?.id)" ><em class="fa fa-trash-alt"></em></button>
+                <!-- <button type="button" class="btn btn-secondary"><em class="fa fa-edit"></em></button> -->
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="form-group mb-3">
+        <label for="totalapayer">Total à payer</label>
+        <input type="number" class="form-control" placeholder="Total à payer" formControlName="totalapayer"/>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="form-group mb-3">
+        <label for="montantrecu">Montant reçu</label>
+        <input type="number" class="form-control" placeholder="Montant reçu" formControlName="montantrecu" (blur)="onAddAmount($event)"/>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="form-group mb-3">
+        <label for="montantrestant">Montant restant</label>
+        <input type="number" class="form-control" placeholder="Montant restant" formControlName="montantrestant"/>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-end align-items-center mt-3">
+      <button type="submit" class="btn btn-outline-primary mx-3">Enregistrer</button>
+      <button type="button" class="btn btn-secondary">Annuler</button>
+    </div>
+  </div>
+</form>
+
+<app-confirm-dialog></app-confirm-dialog>
+

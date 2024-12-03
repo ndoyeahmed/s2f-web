@@ -1,0 +1,28 @@
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Liste des commandes</h6>
+
+    <app-form-dialog [formDialogTitle]="'Ajouter une commande'" [formDialogOpenBtnTitle]="'Nouvelle commande'"
+      [formDialogOptions]="formDialogOptions">
+      <app-commande-form />
+    </app-form-dialog>
+  </div>
+  <div class="card-body">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+      <li [ngbNavItem]="1">
+        <button ngbNavLink>Commandes en cours</button>
+        <ng-template ngbNavContent>
+          <app-commande-list />
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <button ngbNavLink>Commandes terminées</button>
+        <ng-template ngbNavContent>
+          <app-commande-list />
+        </ng-template>
+      </li>
+    </ul>
+
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  </div>
+</div>

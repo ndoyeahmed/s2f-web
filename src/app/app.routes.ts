@@ -28,6 +28,14 @@ export const routes: Routes = [
           ),
         canActivate: [AuthGuard],
       },
+      {
+        path: 'clients',
+        loadComponent: () =>
+          import(
+            './features/clients/client-list/client-list.component'
+          ).then((m) => m.ClientListComponent),
+        canActivate: [AuthGuard],
+      },
     ],
   },
   {

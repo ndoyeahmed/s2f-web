@@ -1,0 +1,54 @@
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Liste des clients</h6>
+
+      <app-form-dialog [formDialogTitle]="'Ajouter un nouveau Client'" [formDialogOpenBtnTitle]="'Nouveau client'">
+        <app-client-form />
+      </app-form-dialog>
+    </div>
+    <div class="card-body">
+      @defer (when clientService.loaderSignal()) {
+      <div class="table-responsive">
+        <table class="table table-hover table-striped" id="dataTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nom</th>
+              <th>Prenom</th>
+              <th>Telephone</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (client of clientService.clientSignal(); track $index) {
+            <tr>
+              <td>{{$index + 1}}</td>
+              <td>{{client?.nom}}</td>
+              <td>{{client?.prenom}}</td>
+              <td>{{client?.telephone}}</td>
+              <td>
+                <app-form-dialog [formDialogTitle]="'Editer le produit'" [formDialogOpenBtnPrefixIcon]="'fa fa-pen'" @fade
+                  [formDialogOpenBtnCss]="'btn btn-outline-secondary mx-3'">
+                  <app-client-form  />
+                </app-form-dialog>
+                <button type="button" class="btn btn-outline-secondary"  @fade>
+                  <em class="fa fa-trash-alt"></em>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+          <!-- Pagination Controls -->
+          <button class="btn btn-outline-dark mx-3" (click)="previousPage()"
+            [disabled]="clientService.currentPageSignal() === 0">Précédent</button>
+          <button class="btn btn-outline-dark" (click)="nextPage()"
+            [disabled]="clientService.currentPageSignal() + 1 >= clientService.totalPagesSignal()">Suivant</button>
+        </div>
+      </div>
+      }
+
+    </div>
+  </div>
+  <app-confirm-dialog></app-confirm-dialog>

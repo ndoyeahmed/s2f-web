@@ -2,12 +2,41 @@
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
       <h6 class="m-0 font-weight-bold text-primary">Liste des clients</h6>
 
-      <app-form-dialog [formDialogTitle]="'Ajouter un nouveau Client'" [formDialogOpenBtnTitle]="'Nouveau client'">
-        <app-client-form />
-      </app-form-dialog>
+      <app-client-form  (afterSave)="afterClientSaved($event)"  @fade />
     </div>
+
     <div class="card-body">
       @defer (when clientService.loaderSignal()) {
+        <div class="col-md-12 col-lg-12 col-sm-12 mt-4">
+            <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <div class="row">
+                            <div class="col-md-4 col-lg-4 col-sm-12">
+                                <label class="form-label" for=""><b>Filtrer par:</b></label>
+                            </div>
+                            <div class="col-md-8 col-lg-8 col-sm-12">
+                                <select class="form-select" id="filter" formControlName="filterType" (change)="onSelectedFilterType($event)">
+                        <option value="nom">Nom</option>
+                        <option value="prenom">Telephone</option>
+                      </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <input class="form-control" id="search" formControlName="searchTerm" type="text" placeholder="Tapez votre recherche....">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <button type="submit" class="btn btn-outline-rechercher text-black">
+                      Rechercher
+                    </button> &nbsp;&nbsp;
+                        <button type="button" (click)="clear()" class="btn btn-outline-secondary text-black">
+                      Annuler
+                    </button>
+                    </div>
+                </div>
+            </form>
+        </div>
       <div class="table-responsive">
         <table class="table table-hover table-striped" id="dataTable">
           <thead>
@@ -27,10 +56,8 @@
               <td>{{client?.prenom}}</td>
               <td>{{client?.telephone}}</td>
               <td>
-                <app-form-dialog [formDialogTitle]="'Editer le produit'" [formDialogOpenBtnPrefixIcon]="'fa fa-pen'" @fade
-                  [formDialogOpenBtnCss]="'btn btn-outline-secondary mx-3'">
-                  <app-client-form  />
-                </app-form-dialog>
+                <app-client-form ng-click="openEditModal(content)" [clientEdit]="client" [formDialogTitle]="'Editer le client'" [formDialogOpenBtnPrefixIcon]="'fa fa-pen'" @fade
+                [formDialogOpenBtnCss]="'btn btn-outline-secondary mx-3'" [formDialogOpenBtnTitle]="''"/>
                 <button type="button" class="btn btn-outline-secondary"  @fade>
                   <em class="fa fa-trash-alt"></em>
                 </button>
@@ -47,8 +74,9 @@
             [disabled]="clientService.currentPageSignal() + 1 >= clientService.totalPagesSignal()">Suivant</button>
         </div>
       </div>
-      }
-
+      }@placeholder {
+        <app-table-skeleton-placeholder [columnHeader]="['#', 'Produit', 'Prix', 'Categorie', 'Description', 'Actions']" />
+        }
     </div>
   </div>
   <app-confirm-dialog></app-confirm-dialog>

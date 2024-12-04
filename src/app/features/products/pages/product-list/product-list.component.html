@@ -33,11 +33,9 @@
                 [formDialogOpenBtnCss]="'btn btn-outline-secondary mx-3'">
                 <app-product-form [productEdit]="produit" />
               </app-form-dialog>
-
               <button type="button" class="btn btn-outline-secondary" (click)="onDeleteProduct(produit)" @fade>
                 <em class="fa fa-trash-alt"></em>
               </button>
-
             </td>
           </tr>
           }
@@ -54,7 +52,6 @@
     } @placeholder {
     <app-table-skeleton-placeholder [columnHeader]="['#', 'Produit', 'Prix', 'Categorie', 'Description', 'Actions']" />
     }
-
   </div>
 </div>
 <app-confirm-dialog></app-confirm-dialog>

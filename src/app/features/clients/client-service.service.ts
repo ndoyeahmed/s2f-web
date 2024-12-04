@@ -44,7 +44,7 @@ export class ClientServiceService {
       .get<ResponseDTOPaging>(`/api/v1/clients/filter`, options)
       .subscribe({
         next: (response) => {
-          this.clientSignal.set(response.result); // Mettre à jour les produits
+          this.clientSignal.set(response.result); // Mettre à jour les clients
           this.currentPageSignal.set(response.page); // Mettre à jour la page courante
           this.totalPagesSignal.set(response.totalPages); // Mettre à jour le total des pages
           this.totalElementsSignal.set(response.totalElements); // Mettre à jour le total des éléments
@@ -59,5 +59,14 @@ export class ClientServiceService {
 
   getAllClienttsNotArchived() {
     return this.http.get<ResponseDTOPaging>(`/api/v1/clients/filter`);
+  }
+  getAllClientNotArchived() {
+    return this.http.get<ClientDTO[]>(`/api/v1/clients`);
+  }
+  addClient(client: any) {
+    return this.http.post(`/api/v1/clients`, client);
+  }
+  archiveMesure(mesureId: number) {
+    return this.http.delete(`/api/v1/mesure/${mesureId}`);
   }
 }

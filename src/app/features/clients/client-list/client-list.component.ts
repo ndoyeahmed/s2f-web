@@ -191,6 +191,8 @@ export class ClientListComponent {
           this.searchForm.value.filterType,
           this.searchForm.value.searchTerm
         );
+      }else {
+        console.error('Recherche invalide');
       }
     }
 

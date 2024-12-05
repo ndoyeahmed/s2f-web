@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, effect, EventEmitter, inject, Input, OnInit, Output, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalOptions, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -6,11 +6,14 @@ import { ClientDTO } from '../../../../shared/models/client-dto.model';
 import { MesureDTO } from '../../../../shared/models/mesure-dto.model';
 import { ClientService } from '../../client.service';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
+import { FormDialogService } from '../../../../shared/form-dialog.service';
+import { OPEN } from '../../../../shared/components/form-dialog/form-action-const';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-client-form',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './client-form.component.html',
   styleUrl: './client-form.component.scss'
 })
@@ -19,7 +22,19 @@ export class ClientFormComponent implements OnInit{
   private readonly clientService = inject(ClientService);
   private readonly toastr = inject(ToastrService);
   private readonly confirmDialogService = inject(ConfirmDialogService);
-  constructor(private readonly fb: FormBuilder){}
+  private readonly formDialogService = inject(FormDialogService);
+  constructor(private readonly fb: FormBuilder){
+    effect(() => {
+      const status = this.formDialogService.formdialogSignal();
+      if (status === OPEN) {
+        if (this.clientEdit?.id) {
+          this.initEditClientForm(this.clientEdit);
+        } else {
+          this.initAddClient();
+        }
+      }
+    });
+  }
   @Input() clientEdit!: ClientDTO;
 
   ngOnInit(): void {
@@ -109,12 +124,12 @@ export class ClientFormComponent implements OnInit{
   save(modal: any) {
     if (this.client.nom !== '' && this.client.prenom !== '' && this.client.telephone !== '') {
       const clientRequest = {...this.client, mesures: this.mesures};
+
       this.clientService.addClient(clientRequest).subscribe(
         (response: any) => {
-          this.client.id = response.id; // Récupérer l'ID du client créé
-          this.addNewMesure(); // Lier une mesure immédiatement
-          this.toastr.success('Client ajouté avec succès');
-          //this.resetForm();
+          this.toastr.success('client ajouté avec succès');
+          this.mesures = [];
+          this.client = { nom: '', prenom: '', telephone: '', id: 0, archive: false, mesures: this.mesures };
           this.afterSave.emit(true);
           modal.close();
         },
@@ -156,6 +171,7 @@ export class ClientFormComponent implements OnInit{
 // Exemple d'ouverture en mode édition
 openEditModal(content: TemplateRef<any>, client: ClientDTO) {
   this.clientEdit = client;
+  this.onSubmit();
   this.open(content);
 }
 
@@ -169,5 +185,22 @@ openAddModal(content: TemplateRef<any>) {
     this.clientForm.reset();
     this.mesures = [];
     this.client = { nom: '', prenom: '', telephone: '', id: 0, archive: false, mesures: this.mesures };
+  }
+
+  onSubmit() {
+    if (this.clientForm.valid) {
+      const client = {
+        id: this.clientEdit?.id ? this.clientEdit.id : null,
+        nom: this.clientForm.value.nom,
+        prenom: this.clientForm.value.prenom,
+        telephone: this.clientForm.value.telephone,
+        mesures: this.clientForm.value.mesures,
+       /*  mesures: [{
+          id: Number(this.clientForm.value.mesures),
+        }] as MesureDTO, */
+      } as ClientDTO;
+
+      this.clientService.addClientAndRefresh(client, this.clientForm);
+    }
   }
 }

@@ -8,7 +8,7 @@
     <div class="card-body">
       @defer (when clientService.loaderSignal()) {
         <div class="col-md-12 col-lg-12 col-sm-12 mt-4">
-            <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+            <form [formGroup]="clientForm" (ngSubmit)="onSearch()">
                 <div class="row">
                     <div class="col-lg-4 col-md-4 col-sm-12">
                         <div class="row">
@@ -16,9 +16,9 @@
                                 <label class="form-label" for=""><b>Filtrer par:</b></label>
                             </div>
                             <div class="col-md-8 col-lg-8 col-sm-12">
-                                <select class="form-select" id="filter" formControlName="filterType" (change)="onSelectedFilterType($event)">
+                                <select class="form-select" id="filter" [(ngModel)]="client" (change)="onSelectedFilterType($event)">
                         <option value="nom">Nom</option>
-                        <option value="prenom">Telephone</option>
+                        <option value="telephone">Telephone</option>
                       </select>
                             </div>
                         </div>

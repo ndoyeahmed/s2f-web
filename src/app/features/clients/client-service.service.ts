@@ -69,4 +69,5 @@ export class ClientServiceService {
   archiveMesure(mesureId: number) {
     return this.http.delete(`/api/v1/mesure/${mesureId}`);
   }
+  
 }

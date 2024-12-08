@@ -1,21 +1,19 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { ClientDTO } from '../../shared/models/client-dto.model';
-import { FormGroup } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
-import { CLOSE } from '../../shared/components/form-dialog/form-action-const';
-import { FormDialogService } from '../../shared/form-dialog.service';
+import { CategorieDTO } from '../../shared/models/categorie-dto.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ResponseDTOPaging } from '../../shared/models/response-dto-paging.model';
+import { FormGroup } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormDialogService } from '../../shared/form-dialog.service';
+import { CLOSE } from '../../shared/components/form-dialog/form-action-const';
+import { ClientDTO } from '../../shared/models/client-dto.model';
 import { ClientFilter } from '../../shared/client-filter';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ClientService {
-
-  constructor(private readonly http: HttpClient) { }
-  loaderFormSignal = signal<boolean>(false); // Nombre total de pages
+export class ClientServiceService {
   private readonly toastr = inject(ToastrService);
   private readonly modalService = inject(NgbModal);
   private readonly formDialogService = inject(FormDialogService);
@@ -25,18 +23,19 @@ export class ClientService {
   totalElementsSignal = signal<number>(0); // Page actuelle
   totalPagesSignal = signal<number>(0); // Nombre total de pages
   loaderSignal = signal<boolean>(false); // Nombre total de pages
+  loaderFormSignal = signal<boolean>(false); // Nombre total de pages
   clientFilter = {
     page: 0,
     size: 5,
   } as ClientFilter;
 
-  addClient(client: any) {
-    return this.http.post(`/api/v1/clients`, client);
+  constructor(private readonly http: HttpClient) {
+    this.getAllClientsByFilters(
+      this.clientFilter.page,
+      this.clientFilter.size
+    );
   }
 
-  getAllClientNotArchived() {
-    return this.http.get<ClientDTO[]>(`/api/v1/clients`);
-  }
   getAllClientsByFilters(page = 0, size = 5) {
     const options = {
       params: new HttpParams().set('page', page).set('size', size),
@@ -58,26 +57,17 @@ export class ClientService {
       });
   }
 
-  addClientAndRefresh(client: ClientDTO, form: FormGroup) {
-    this.loaderFormSignal.set(true);
-    this.addClient(client).subscribe({
-      next: () => {
-        form.reset();
-        client?.id
-          ? this.toastr.success('Client ajouté avec succès')
-          : this.toastr.success('Client éditer avec succès');
-        this.loaderFormSignal.set(false);
-        this.modalService.dismissAll();
-        this.formDialogService.formdialogSignal.set(CLOSE);
-        this.getAllClientsByFilters(
-          this.clientFilter.page,
-          this.clientFilter.size
-        );
-      },
-      error: (err) => {
-        this.toastr.error("Echec de l'opération");
-        this.loaderFormSignal.set(false);
-      },
-    });
+  getAllClienttsNotArchived() {
+    return this.http.get<ResponseDTOPaging>(`/api/v1/clients/filter`);
   }
+  getAllClientNotArchived() {
+    return this.http.get<ClientDTO[]>(`/api/v1/clients`);
+  }
+  addClient(client: any) {
+    return this.http.post(`/api/v1/clients`, client);
+  }
+  archiveMesure(mesureId: number) {
+    return this.http.delete(`/api/v1/mesure/${mesureId}`);
+  }
+  
 }

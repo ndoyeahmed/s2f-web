@@ -24,11 +24,13 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
   animations: [fade, fadeSlide],
 })
 export default class ProductListComponent {
+
   productService = inject(ProductsService);
   private readonly toastr = inject(ToastrService);
   private readonly confirmDialogService = inject(ConfirmDialogService);
 
   products!: ProduitDTO[];
+
   productPayloadFilter = {
     page: 0,
     size: 5,
@@ -99,4 +101,5 @@ export default class ProductListComponent {
       }
     );
   }
+  
 }

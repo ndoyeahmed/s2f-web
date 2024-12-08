@@ -6,4 +6,5 @@ export interface ClientDTO {
   prenom: string;
   telephone: string;
   archive: boolean;
+  mesures: MesureDTO[];
 }

@@ -1,6 +1,6 @@
 import { CommandeProduitDTO } from './../../../../shared/models/commande-product.model';
 import { ResponseDTOPaging } from './../../../../shared/models/response-dto-paging.model';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientFormComponent } from '../client-form/client-form.component';
 import { CommandeService } from '../../commande.service';
@@ -9,9 +9,8 @@ import { ProduitDTO } from '../../../../shared/models/produit-dto.model';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
-import { FormDialogComponent } from '../../../../shared/components/form-dialog/form-dialog.component';
 import { fade, fadeSlide } from '../../../../shared/animations/animations';
-import { NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { ClientDTO } from '../../../../shared/models/client-dto.model';
 import { ClientService } from '../../client.service';
 import moment from 'moment';
@@ -19,12 +18,13 @@ import moment from 'moment';
 @Component({
   selector: 'app-commande-form',
   standalone: true,
-  imports: [FormsModule ,ReactiveFormsModule, ClientFormComponent, ConfirmDialogComponent,FormDialogComponent,],
+  imports: [FormsModule ,ReactiveFormsModule, ClientFormComponent, ConfirmDialogComponent,],
   templateUrl: './commande-form.component.html',
   styleUrl: './commande-form.component.scss',
   animations: [fade, fadeSlide],
 })
 export class CommandeFormComponent {
+  @Output() afterSave: EventEmitter<boolean> = new EventEmitter();
   form!: FormGroup;
   commandeNumber = '';
   commandeDate = moment().format('DD/MM/YYYY');
@@ -52,6 +52,7 @@ export class CommandeFormComponent {
     private readonly clientService: ClientService,
     private readonly fb: FormBuilder,
     private readonly toastr: ToastrService,
+    private readonly modalService: NgbModal,
     private readonly confirmDialogService: ConfirmDialogService
   ) {}
 
@@ -191,6 +192,7 @@ export class CommandeFormComponent {
 
     onSubmit() {
       if (this.form.valid && this.seletedClient && this.seletedProduct && this.orderedProducts && this.orderedProducts.length > 0) {
+        this.commandeService.loaderFormSignal.set(true);
         const commandeData = {
           numero: this.commandeNumber,
           clientId: this.seletedClientId,
@@ -208,9 +210,13 @@ export class CommandeFormComponent {
             this.orderedProducts = [];
             this.seletedProductId = 0;
             this.seletedClientId = 0;
+            this.commandeService.loaderFormSignal.set(false);
+            this.modalService.dismissAll();
+            this.afterSave.next(true);
           },
           (err: any) => {
             this.toastr.error('Erreur lors de la sauvegarde de la commande');
+            this.commandeService.loaderFormSignal.set(false);
             console.log('error saving commande', err);
           }
         );

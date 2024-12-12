@@ -22,10 +22,6 @@ export class CommandeService {
   } as ProductFilterPayload;
 
   constructor(private readonly http: HttpClient, private readonly toastr: ToastrService) {
-    this.getAllCommandeByFilters('ENCOURS',
-      this.productPayloadFilter.page,
-      this.productPayloadFilter.size
-    );
   }
 
   getNewCommandeNumber() {
@@ -59,6 +55,14 @@ export class CommandeService {
 
     archiveCommande(commandeId: number) {
       return this.http.delete(`/api/v1/commandes/${commandeId}`);
+    }
+
+    updateCommande(commande: any) {
+      return this.http.put(`/api/v1/commandes/etat`, commande);
+    }
+
+    getDetailsCommandeByCommandeId(commandeId: number) {
+      return this.http.get(`/api/v1/details-commande/${commandeId}`);
     }
 }
 

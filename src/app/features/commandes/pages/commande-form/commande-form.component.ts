@@ -194,6 +194,7 @@ export class CommandeFormComponent {
         const commandeData = {
           numero: this.commandeNumber,
           clientId: this.seletedClientId,
+          montantRecu: Number(this.form.controls['montantrecu'].value),
           orderedProducts: this.orderedProducts.map((prod) => ({
             quantite: prod.quantite,
             prixVente: prod.prixVente,

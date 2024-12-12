@@ -12,13 +12,25 @@
       <li [ngbNavItem]="1">
         <button ngbNavLink>Commandes en cours</button>
         <ng-template ngbNavContent>
-          <app-commande-list />
+          <app-commande-list etatCommande="ENCOURS"/>
         </ng-template>
       </li>
       <li [ngbNavItem]="2">
         <button ngbNavLink>Commandes terminées</button>
         <ng-template ngbNavContent>
-          <app-commande-list />
+          <app-commande-list etatCommande="TERMINER"/>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="3">
+        <button ngbNavLink>Commandes Livrées</button>
+        <ng-template ngbNavContent>
+          <app-commande-list etatCommande="LIVRER"/>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="4">
+        <button ngbNavLink>Commandes Annulées</button>
+        <ng-template ngbNavContent>
+          <app-commande-list etatCommande="ANNULER"/>
         </ng-template>
       </li>
     </ul>

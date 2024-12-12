@@ -1,1 +1,55 @@
-<p>commande-list works!</p>
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Liste des Commandes</h6>
+  </div>
+  <div class="card-body">
+    @defer (when commandeService.loaderSignal()) {
+    <div class="table-responsive">
+      <table class="table table-hover table-striped" id="dataTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Numéro</th>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Détails</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (commande of commandeService.commandsSignal(); track $index) {
+          <tr>
+            <td>{{$index + 1}}</td>
+            <td>{{commande?.numero}}</td>
+            <td>{{commande?.date}}</td>
+            <td>{{commande?.client?.prenom}} {{commande?.client?.nom}}</td>
+            <td>details</td>
+            <td>
+              <!-- <app-form-dialog [formDialogTitle]="'Editer la commande'" [formDialogOpenBtnPrefixIcon]="'fa fa-pen'" @fade
+                [formDialogOpenBtnCss]="'btn btn-outline-secondary mx-3'">
+
+              </app-form-dialog> -->
+
+              <button type="button" class="btn btn-outline-secondary" (click)="onDeleteCommande(commande)" @fade>
+                <em class="fa fa-trash-alt"></em>
+              </button>
+
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-end">
+        <!-- Pagination Controls -->
+        <button class="btn btn-outline-dark mx-3" (click)="previousPage()"
+          [disabled]="commandeService.currentPageSignal() === 0">Précédent</button>
+        <button class="btn btn-outline-dark" (click)="nextPage()"
+          [disabled]="commandeService.currentPageSignal() + 1 >= commandeService.totalPagesSignal()">Suivant</button>
+      </div>
+    </div>
+    } @placeholder {
+    <app-table-skeleton-placeholder [columnHeader]="['#', 'Numéro', 'Date', 'Client', 'Détails', 'Actions']" />
+    }
+  </div>
+</div>
+<app-confirm-dialog></app-confirm-dialog>

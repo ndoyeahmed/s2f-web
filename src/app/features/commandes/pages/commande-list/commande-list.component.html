@@ -1,7 +1,4 @@
 <div class="card shadow mb-4">
-  <div class="card-header py-3 d-flex justify-content-between align-items-center">
-    <h6 class="m-0 font-weight-bold text-primary">Liste des Commandes</h6>
-  </div>
   <div class="card-body">
     @defer (when commandeService.loaderSignal()) {
     <div class="table-responsive">
@@ -12,6 +9,7 @@
             <th>Numéro</th>
             <th>Date</th>
             <th>Client</th>
+            <th>Statut</th>
             <th>Détails</th>
             <th>Action</th>
           </tr>
@@ -21,19 +19,27 @@
           <tr>
             <td>{{$index + 1}}</td>
             <td>{{commande?.numero}}</td>
-            <td>{{commande?.date}}</td>
+            <td>{{formatDate(commande?.date)}}</td>
             <td>{{commande?.client?.prenom}} {{commande?.client?.nom}}</td>
-            <td>details</td>
             <td>
-              <!-- <app-form-dialog [formDialogTitle]="'Editer la commande'" [formDialogOpenBtnPrefixIcon]="'fa fa-pen'" @fade
-                [formDialogOpenBtnCss]="'btn btn-outline-secondary mx-3'">
-
-              </app-form-dialog> -->
-
-              <button type="button" class="btn btn-outline-secondary" (click)="onDeleteCommande(commande)" @fade>
-                <em class="fa fa-trash-alt"></em>
+              <button class="btn btn-outline-dark" (click)="onChangeEtatCommande(commande, etatContent)">
+                {{commande?.etatCommande}}
+                <em class="fa fa-pen"></em>
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-outline-dark" (click)="showDetails(commande, detailContent)">
+                Détails
+              </button>
+            </td>
+            <td class="d-flex justify-content-evenly flex-wrap">
+              <button type="button" class="btn btn-outline-secondary mx-2 my-1" (click)="onDeleteCommande(commande, deleteContent)" @fade>
+                <em class="fa fa-pen"></em>
               </button>
 
+              <button type="button" class="btn btn-outline-secondary mx-2 my-1" (click)="onDeleteCommande(commande, deleteContent)" @fade>
+                <em class="fa fa-trash-alt"></em>
+              </button>
             </td>
           </tr>
           }
@@ -48,8 +54,78 @@
       </div>
     </div>
     } @placeholder {
-    <app-table-skeleton-placeholder [columnHeader]="['#', 'Numéro', 'Date', 'Client', 'Détails', 'Actions']" />
+    <app-table-skeleton-placeholder [columnHeader]="['#', 'Numéro', 'Date', 'Client', 'Statut', 'Détails', 'Actions']" />
     }
   </div>
 </div>
-<app-confirm-dialog></app-confirm-dialog>
+
+<ng-template #deleteContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirmation</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		{{confirmMsg}}
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-danger" (click)="archiveCommande(archivedCommandId)">Oui</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Non</button>
+	</div>
+</ng-template>
+
+<ng-template #etatContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Confirmation</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		{{confirmMsg}}
+    <div class="my-2">
+      <label for="client">Etat de la commande :</label>
+      <div class="input-group mb-3">
+      <select [value]="editEtatCommande?.etatCommande" class="form-select" id="etat" name="etat" (change)="onSelectionChangeEtatCommande($event)">
+        <option value="ENCOURS">ENCOURS</option>
+        <option value="TERMINER">TERMINER</option>
+        <option value="LIVRER">LIVRER</option>
+        <option value="ANNULER">ANNULER</option>
+      </select>
+    </div>
+    </div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-primary mx-3" (click)="changeEtat()">Enregistrer</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Annuler</button>
+	</div>
+</ng-template>
+
+<ng-template #detailContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Détails de la commande : {{editEtatCommande?.numero}}</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		<div class="table-responsive">
+      <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix vente</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (detailCommande of detailCommandes; track $index) {
+            <tr>
+              <td>{{detailCommande?.produit?.libelle}}</td>
+              <td>{{detailCommande?.quantite}}</td>
+              <td>{{detailCommande?.prixVente}}</td>
+              <td>{{(detailCommande?.prixVente??0) * (detailCommande?.quantite??0)}}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+	</div>
+</ng-template>
+

@@ -4,7 +4,7 @@
 
     <app-form-dialog [formDialogTitle]="'Ajouter une commande'" [formDialogOpenBtnTitle]="'Nouvelle commande'"
       [formDialogOptions]="formDialogOptions">
-      <app-commande-form />
+      <app-commande-form (afterSave)="afterSave($event)"/>
     </app-form-dialog>
   </div>
   <div class="card-body">

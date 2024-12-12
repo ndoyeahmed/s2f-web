@@ -22,4 +22,10 @@ export default class CommandesComponent {
     size: 'xl',
     backdrop: 'static',
   };
+
+  afterSave(event: boolean) {
+    if (event) {
+      this.active = 1;
+    }
+  }
 }

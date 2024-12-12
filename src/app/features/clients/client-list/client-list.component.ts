@@ -18,7 +18,6 @@ import { Subscription } from 'rxjs';
   selector: 'app-client-list',
   standalone: true,
   imports: [
-    FormDialogComponent,
     ClientFormComponent,
     TableSkeletonPlaceholderComponent,
     ConfirmDialogComponent,
@@ -35,7 +34,7 @@ export class ClientListComponent {
   private readonly confirmDialogService = inject(ConfirmDialogService);
   mesures: MesureDTO[] = [];
   client: ClientDTO = { nom: '', prenom: '', telephone: '', id: 0, archive: false ,mesures: []};
-  constructor(private readonly fb: FormBuilder){}
+
   clientForm!: FormGroup;
   subscriptions = [] as Subscription[];
   formDialogOptions: NgbModalOptions = {
@@ -53,6 +52,9 @@ export class ClientListComponent {
     size: 5,
   } as ClientFilter;
   @Input() clientEdit!: ClientDTO;
+
+  constructor(private readonly fb: FormBuilder){}
+
   // Charger la page précédente
   previousPage() {
     const currentPage = this.clientService.currentPageSignal();
@@ -67,34 +69,8 @@ export class ClientListComponent {
       );
     }
   }
-  private getDismissReason(reason: any): string {
-    switch (reason) {
-      case ModalDismissReasons.ESC:
-        return 'by pressing ESC';
-      case ModalDismissReasons.BACKDROP_CLICK:
-        return 'by clicking on a backdrop';
-      default:
-        return `with: ${reason}`;
-    }
-  }
-  open(content: TemplateRef<any>) {
-    this.modalService.open(content, this.formDialogOptions).result.then(
-      (result) => {
-        this.closeResult = `Closed with: ${result}`;
-      },
-      (reason) => {
-        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-      }
-    );
-  }
   ngOnInit() {
     this.getAllClientNotArchived();
-    if (this.clientEdit?.id) {
-      this.initEditClientForm(this.clientEdit);
-    } else {
-      this.initAddClient();
-    }
-    //this.initForm();
   }
 
   // Charger la page suivante
@@ -124,39 +100,7 @@ export class ClientListComponent {
       (err: any) => console.log('error getting clients')
     );
   }
-  openEditModal(content: TemplateRef<any>, client: ClientDTO) {
-    this.clientEdit = client;
-    this.open(content);
-  }
 
-    initEditClientForm(client: ClientDTO) {
-      this.clientForm = this.fb.group({
-        name: [client.nom, Validators.required],
-        description: [client.prenom, Validators.required],
-        price: [client.telephone, [Validators.required, Validators.min(0)]],
-        mesures : [...client.mesures]
-      });
-    }
-
-    initAddClient(){
-      if (this.client.nom !== '' && this.client.prenom !== '' && this.client.telephone !== '') {
-        const clientRequest = {...this.client, mesures: this.mesures};
-        this.clientService.addClient(clientRequest).subscribe(
-          (response: any) => {
-            this.toastr.success('client ajouté avec succès');
-            this.mesures = [];
-            this.client = { nom: '', prenom: '', telephone: '', id: 0, archive: false,mesures: [] };
-            this.afterSave.emit(true);
-            //modal.close();
-          },
-          (err: any) => {
-            this.toastr.error("Echec de l'opération");
-          }
-        );
-      } else {
-        this.toastr.error('Veuillez remplir les champs obligatoire');
-      }
-    }
   ////////////////////////filter////////////////////////
   onSelectedFilterType(event: any) {
   }
@@ -218,17 +162,4 @@ export class ClientListComponent {
       );
     }
 
-    onDeleteProduct(mesure: MesureDTO) {
-      this.confirmDialogService.openConfirmDialog(
-        `Voulez-vous vraiment supprimer ${mesure.libelle} ?`,
-        () => {
-          // Fonction exécutée si l'utilisateur clique sur "Oui"
-          this.archiveMesure(mesure);
-        },
-        () => {
-          // Fonction exécutée si l'utilisateur clique sur "Non"
-          console.log('Suppression annulée');
-        }
-      );
-    }
 }
